@@ -1,0 +1,90 @@
+#include <iostream>
+using namespace std;
+
+class Stack {
+private:
+    int top;
+    int maxSize;
+    char* stackArray;
+
+public:
+    // Constructor to initialize the stack
+    Stack(int size) {
+        maxSize = size;
+        stackArray = new char[maxSize];
+        top = -1; // Indicates an empty stack
+    }
+
+    // Destructor to clean up the stack
+    ~Stack() {
+        delete[] stackArray;
+    }
+
+    // Function to check if the stack is empty
+    bool isEmpty() {
+        return top == -1;
+    }
+
+    // Function to push an element onto the stack
+    void push(char value) {
+        if (top < maxSize - 1) {
+            stackArray[++top] = value;
+        }
+    }
+
+    // Function to pop an element from the stack
+    char pop() {
+        if (!isEmpty()) {
+            return stackArray[top--];
+        }
+        return '\0'; // Return null character if stack is empty
+    }
+
+    // Function to get the top element of the stack
+    char peek() {
+        if (!isEmpty()) {
+            return stackArray[top];
+        }
+        return '\0'; // Return null character if stack is empty
+    }
+};
+
+bool isMatchingPair(char open, char close) {
+    return (open == '(' && close == ')') ||
+           (open == '{' && close == '}') ||
+           (open == '[' && close == ']');
+}
+
+bool areParenthesesBalanced(const string& expression) {
+    Stack stack(expression.length());
+
+    for (char ch : expression) {
+        // If it's an opening bracket, push it onto the stack
+        if (ch == '(' || ch == '{' || ch == '[') {
+            stack.push(ch);
+        }
+        // If it's a closing bracket, check for matching
+        else if (ch == ')' || ch == '}' || ch == ']') {
+            if (stack.isEmpty() || !isMatchingPair(stack.pop(), ch)) {
+                return false; // Mismatch or extra closing bracket
+            }
+        }
+    }
+
+    // If stack is empty, parentheses are balanced
+    return stack.isEmpty();
+}
+
+int main() {
+    string expression;
+    cout << "Enter a parenthesized expression: ";
+    cin >> expression;
+
+    if (areParenthesesBalanced(expression)) {
+        cout << "The expression has properly matching parentheses." << endl;
+    } else {
+        cout << "The expression does not have properly matching parentheses." << endl;
+    }
+
+    return 0;
+}
