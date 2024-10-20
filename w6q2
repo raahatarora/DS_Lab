@@ -1,0 +1,101 @@
+#include <iostream>
+using namespace std;
+
+class Stack {
+private:
+    int top;
+    int maxSize;
+    int* stackArray;
+
+public:
+    // Constructor to initialize the stack
+    Stack(int size) {
+        maxSize = size;
+        stackArray = new int[maxSize];
+        top = -1; // Indicates an empty stack
+    }
+
+    // Destructor to clean up the stack
+    ~Stack() {
+        delete[] stackArray;
+    }
+
+    // Function to check if the stack is empty
+    bool isEmpty() {
+        return top == -1;
+    }
+
+    // Function to push an element onto the stack
+    void push(int value) {
+        if (top < maxSize - 1) {
+            stackArray[++top] = value;
+        }
+    }
+
+    // Function to pop an element from the stack
+    int pop() {
+        if (!isEmpty()) {
+            return stackArray[top--];
+        }
+        return 0; // Return 0 if stack is empty
+    }
+};
+
+// Function to evaluate a postfix expression
+int evaluatePostfix(const string& postfix) {
+    Stack stack(postfix.length());
+
+    for (char c : postfix) {
+        if (isdigit(c)) {
+            stack.push(c - '0'); // Convert char to int
+        } else {
+            int operand2 = stack.pop();
+            int operand1 = stack.pop();
+            switch (c) {
+                case '+': stack.push(operand1 + operand2); break;
+                case '-': stack.push(operand1 - operand2); break;
+                case '*': stack.push(operand1 * operand2); break;
+                case '/': stack.push(operand1 / operand2); break;
+            }
+        }
+    }
+
+    return stack.pop(); // Final result
+}
+
+// Function to evaluate a prefix expression
+int evaluatePrefix(const string& prefix) {
+    Stack stack(prefix.length());
+
+    for (int i = prefix.length() - 1; i >= 0; i--) {
+        char c = prefix[i];
+        if (isdigit(c)) {
+            stack.push(c - '0'); // Convert char to int
+        } else {
+            int operand1 = stack.pop();
+            int operand2 = stack.pop();
+            switch (c) {
+                case '+': stack.push(operand1 + operand2); break;
+                case '-': stack.push(operand1 - operand2); break;
+                case '*': stack.push(operand1 * operand2); break;
+                case '/': stack.push(operand1 / operand2); break;
+            }
+        }
+    }
+
+    return stack.pop(); // Final result
+}
+
+int main() {
+    string postfix, prefix;
+
+    cout << "Enter a postfix expression (e.g., 23*54*+): ";
+    cin >> postfix;
+    cout << "Postfix evaluation result: " << evaluatePostfix(postfix) << endl;
+
+    cout << "Enter a prefix expression (e.g., +*23*54): ";
+    cin >> prefix;
+    cout << "Prefix evaluation result: " << evaluatePrefix(prefix) << endl;
+
+    return 0;
+}
