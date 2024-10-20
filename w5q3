@@ -1,0 +1,86 @@
+#include <iostream>
+using namespace std;
+
+class Stack {
+private:
+    int top;
+    int maxSize;
+    char* stackArray;
+
+public:
+    // Constructor to initialize the stack
+    Stack(int size) {
+        maxSize = size;
+        stackArray = new char[maxSize];
+        top = -1; // Indicates an empty stack
+    }
+
+    // Destructor to clean up the stack
+    ~Stack() {
+        delete[] stackArray;
+    }
+
+    // Function to check if the stack is empty
+    bool isEmpty() {
+        return top == -1;
+    }
+
+    // Function to push an element onto the stack
+    void push(char value) {
+        if (top < maxSize - 1) {
+            stackArray[++top] = value;
+        }
+    }
+
+    // Function to pop an element from the stack
+    char pop() {
+        if (!isEmpty()) {
+            return stackArray[top--];
+        }
+        return '\0'; // Return null character if stack is empty
+    }
+
+    // Function to get the top element of the stack
+    char peek() {
+        if (!isEmpty()) {
+            return stackArray[top];
+        }
+        return '\0'; // Return null character if stack is empty
+    }
+};
+
+bool isPalindrome(const string& str) {
+    int n = str.length();
+    Stack stack(n);
+
+    // Push the first half of the string onto the stack
+    for (int i = 0; i < n / 2; i++) {
+        stack.push(str[i]);
+    }
+
+    // Determine the starting point for comparison
+    int startIndex = (n % 2 == 0) ? n / 2 : n / 2 + 1;
+
+    // Compare the second half of the string with the stack
+    for (int i = startIndex; i < n; i++) {
+        if (stack.pop() != str[i]) {
+            return false; // Not a palindrome
+        }
+    }
+
+    return true; // The string is a palindrome
+}
+
+int main() {
+    string input;
+    cout << "Enter a string: ";
+    cin >> input;
+
+    if (isPalindrome(input)) {
+        cout << "The string is a palindrome." << endl;
+    } else {
+        cout << "The string is not a palindrome." << endl;
+    }
+
+    return 0;
+}
