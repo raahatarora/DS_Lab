@@ -1,0 +1,108 @@
+#include <iostream>
+using namespace std;
+
+class CircularQueue {
+private:
+    char** queueArray; // Array to hold queue elements as character arrays
+    int front;         // Index of the front element
+    int rear;          // Index of the rear element
+    int maxSize;       // Maximum size of the queue
+    static const int maxStringLength = 100; // Maximum length of each string
+
+public:
+    // Constructor to initialize the queue
+    CircularQueue(int size) {
+        maxSize = size;
+        queueArray = new char*[maxSize];
+        for (int i = 0; i < maxSize; i++) {
+            queueArray[i] = new char[maxStringLength]; // Allocate space for each string
+        }
+        front = -1;
+        rear = -1;
+    }
+
+    // Destructor to clean up the queue
+    ~CircularQueue() {
+        for (int i = 0; i < maxSize; i++) {
+            delete[] queueArray[i];
+        }
+        delete[] queueArray;
+    }
+
+    // Function to check if the queue is empty
+    bool isEmpty() {
+        return front == -1;
+    }
+
+    // Function to check if the queue is full
+    bool isFull() {
+        return (rear + 1) % maxSize == front;
+    }
+
+    // Function to insert an element into the queue
+    void insert(const char* value) {
+        if (isFull()) {
+            cout << "Queue is full. Cannot insert \"" << value << "\"." << endl;
+            return;
+        }
+        if (isEmpty()) {
+            front = 0; // Set front to 0 if queue is empty
+        }
+        rear = (rear + 1) % maxSize; // Circular increment
+        strncpy(queueArray[rear], value, maxStringLength);
+        queueArray[rear][maxStringLength - 1] = '\0'; // Ensure null termination
+    }
+
+    // Function to delete an element from the queue
+    char* deleteElement() {
+        if (isEmpty()) {
+            cout << "Queue is empty. Cannot delete." << endl;
+            return nullptr; // Return nullptr to indicate an error
+        }
+        char* value = queueArray[front];
+        if (front == rear) { // Queue will become empty after this deletion
+            front = rear = -1;
+        } else {
+            front = (front + 1) % maxSize; // Circular increment
+        }
+        return value;
+    }
+
+    // Function to display the contents of the queue
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty." << endl;
+            return;
+        }
+        cout << "Queue elements: ";
+        int i = front;
+        while (true) {
+            cout << queueArray[i] << " ";
+            if (i == rear) break;
+            i = (i + 1) % maxSize;
+        }
+        cout << endl; // Print newline after displaying queue elements
+    }
+};
+
+int main() {
+    CircularQueue q(5); // Create a circular queue of size 5
+
+    q.insert("Apple");
+    q.insert("Banana");
+    q.insert("Cherry");
+    q.insert("Date");
+    q.insert("Elderberry");
+
+    q.display(); // Display queue
+
+    cout << "Deleted: " << q.deleteElement() << endl; // Remove an element
+    cout << "Deleted: " << q.deleteElement() << endl; // Remove another element
+
+    q.display(); // Display queue after deletion
+
+    q.insert("Fig"); // Insert new element
+    q.display(); // Display queue again
+
+    return 0;
+}
