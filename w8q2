@@ -1,0 +1,141 @@
+#include <iostream>
+using namespace std;
+
+// Node structure for Stack
+struct StackNode {
+    int data;
+    StackNode* next;
+};
+
+// Stack class
+class Stack {
+private:
+    StackNode* top;
+
+public:
+    Stack() : top(nullptr) {}
+
+    // Push operation
+    void push(int value) {
+        StackNode* newNode = new StackNode();
+        newNode->data = value;
+        newNode->next = top;
+        top = newNode;
+    }
+
+    // Pop operation
+    int pop() {
+        if (isEmpty()) {
+            cout << "Stack is empty!" << endl;
+            return -1; // Indicate stack is empty
+        }
+        StackNode* temp = top;
+        int poppedValue = top->data;
+        top = top->next;
+        delete temp;
+        return poppedValue;
+    }
+
+    // Peek operation
+    int peek() {
+        if (isEmpty()) {
+            cout << "Stack is empty!" << endl;
+            return -1; // Indicate stack is empty
+        }
+        return top->data;
+    }
+
+    // Check if stack is empty
+    bool isEmpty() {
+        return top == nullptr;
+    }
+
+    // Destructor to free memory
+    ~Stack() {
+        while (!isEmpty()) {
+            pop();
+        }
+    }
+};
+
+// Queue implementation using linked list
+struct QueueNode {
+    int data;
+    QueueNode* next;
+};
+
+// Queue class
+class Queue {
+private:
+    QueueNode* front;
+    QueueNode* rear;
+
+public:
+    Queue() : front(nullptr), rear(nullptr) {}
+
+    // Enqueue operation
+    void enqueue(int value) {
+        QueueNode* newNode = new QueueNode();
+        newNode->data = value;
+        newNode->next = nullptr;
+        if (rear) {
+            rear->next = newNode;
+        } else {
+            front = newNode; // If queue was empty
+        }
+        rear = newNode;
+    }
+
+    // Dequeue operation
+    int dequeue() {
+        if (isEmpty()) {
+            cout << "Queue is empty!" << endl;
+            return -1; // Indicate queue is empty
+        }
+        QueueNode* temp = front;
+        int dequeuedValue = front->data;
+        front = front->next;
+        if (!front) {
+            rear = nullptr; // If the queue becomes empty
+        }
+        delete temp;
+        return dequeuedValue;
+    }
+
+    // Check if queue is empty
+    bool isEmpty() {
+        return front == nullptr;
+    }
+
+    // Destructor to free memory
+    ~Queue() {
+        while (!isEmpty()) {
+            dequeue();
+        }
+    }
+};
+
+// Main function to demonstrate Stack and Queue
+int main() {
+    Stack stack;
+    Queue queue;
+
+    // Stack operations
+    cout << "Stack Operations:" << endl;
+    stack.push(10);
+    stack.push(20);
+    stack.push(30);
+    cout << "Top element: " << stack.peek() << endl;
+    cout << "Popped element: " << stack.pop() << endl;
+    cout << "Top element after pop: " << stack.peek() << endl;
+
+    // Queue operations
+    cout << "\nQueue Operations:" << endl;
+    queue.enqueue(10);
+    queue.enqueue(20);
+    queue.enqueue(30);
+    cout << "Dequeued element: " << queue.dequeue() << endl;
+    cout << "Dequeued element: " << queue.dequeue() << endl;
+
+    return 0;
+}
