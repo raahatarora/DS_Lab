@@ -1,0 +1,125 @@
+#include <iostream>
+using namespace std;
+
+// Node structure for Doubly Linked List
+struct Node {
+    int coeff; // Coefficient
+    int exp;   // Exponent
+    Node* next;
+    Node* prev;
+
+    Node(int coefficient, int exponent)
+        : coeff(coefficient), exp(exponent), next(nullptr), prev(nullptr) {}
+};
+
+// Doubly Linked List class for polynomial
+class Polynomial {
+private:
+    Node* head;
+
+public:
+    Polynomial() : head(nullptr) {}
+
+    // Function to insert a term in the polynomial
+    void insertTerm(int coeff, int exp) {
+        Node* newNode = new Node(coeff, exp);
+        if (!head || head->exp < exp) {
+            newNode->next = head;
+            if (head) {
+                head->prev = newNode;
+            }
+            head = newNode;
+        } else {
+            Node* temp = head;
+            while (temp->next && temp->next->exp >= exp) {
+                temp = temp->next;
+            }
+            if (temp->exp == exp) {
+                temp->coeff += coeff; // Combine like terms
+                delete newNode; // No need to insert a new node
+            } else {
+                newNode->next = temp->next;
+                newNode->prev = temp;
+                if (temp->next) {
+                    temp->next->prev = newNode;
+                }
+                temp->next = newNode;
+            }
+        }
+    }
+
+    // Function to add two polynomials
+    Polynomial add(const Polynomial& other) {
+        Polynomial result;
+        Node* p1 = head;
+        Node* p2 = other.head;
+
+        while (p1 || p2) {
+            if (p1 && (!p2 || p1->exp > p2->exp)) {
+                result.insertTerm(p1->coeff, p1->exp);
+                p1 = p1->next;
+            } else if (p2 && (!p1 || p2->exp > p1->exp)) {
+                result.insertTerm(p2->coeff, p2->exp);
+                p2 = p2->next;
+            } else { // p1->exp == p2->exp
+                result.insertTerm(p1->coeff + p2->coeff, p1->exp);
+                p1 = p1->next;
+                p2 = p2->next;
+            }
+        }
+        return result;
+    }
+
+    // Function to print the polynomial
+    void print() {
+        Node* temp = head;
+        if (!temp) {
+            cout << "0";
+            return;
+        }
+        while (temp) {
+            cout << (temp->coeff > 0 && temp != head ? "+" : "") 
+                 << temp->coeff << "x^" << temp->exp << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    // Destructor to free memory
+    ~Polynomial() {
+        while (head) {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+        }
+    }
+};
+
+// Main function to demonstrate polynomial addition
+int main() {
+    Polynomial poly1, poly2;
+
+    // First polynomial: 3x^4 + 2x^3 + 5x^2
+    poly1.insertTerm(3, 4);
+    poly1.insertTerm(2, 3);
+    poly1.insertTerm(5, 2);
+
+    // Second polynomial: 4x^4 + 3x^2 + 6
+    poly2.insertTerm(4, 4);
+    poly2.insertTerm(3, 2);
+    poly2.insertTerm(6, 0);
+
+    cout << "Polynomial 1: ";
+    poly1.print();
+
+    cout << "Polynomial 2: ";
+    poly2.print();
+
+    // Adding the two polynomials
+    Polynomial result = poly1.add(poly2);
+
+    cout << "Result of Addition: ";
+    result.print();
+
+    return 0;
+}
