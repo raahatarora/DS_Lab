@@ -1,0 +1,235 @@
+#include <iostream>
+using namespace std;
+
+// Node structure for Doubly Linked List
+struct Node {
+    int data;
+    Node* next;
+    Node* prev;
+
+    Node(int value) : data(value), next(nullptr), prev(nullptr) {}
+};
+
+// Doubly Linked List class
+class DoublyLinkedList {
+private:
+    Node* head;
+
+public:
+    DoublyLinkedList() : head(nullptr) {}
+
+    // Function to insert an element at the rear end of the list
+    void insertAtRear(int value) {
+        Node* newNode = new Node(value);
+        if (!head) {
+            head = newNode;
+        } else {
+            Node* temp = head;
+            while (temp->next) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+        }
+    }
+
+    // Function to delete an element from the rear end of the list
+    void deleteFromRear() {
+        if (!head) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        if (!head->next) {
+            delete head;
+            head = nullptr;
+            return;
+        }
+        Node* temp = head;
+        while (temp->next) {
+            temp = temp->next;
+        }
+        temp->prev->next = nullptr;
+        delete temp;
+    }
+
+    // Function to insert an element at a given position
+    void insertAtPosition(int value, int position) {
+        Node* newNode = new Node(value);
+        if (position == 0) {
+            newNode->next = head;
+            if (head) {
+                head->prev = newNode;
+            }
+            head = newNode;
+            return;
+        }
+        Node* temp = head;
+        for (int i = 0; temp && i < position - 1; i++) {
+            temp = temp->next;
+        }
+        if (temp) {
+            newNode->next = temp->next;
+            if (temp->next) {
+                temp->next->prev = newNode;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+        } else {
+            cout << "Position out of bounds!" << endl;
+            delete newNode;
+        }
+    }
+
+    // Function to delete an element from a given position
+    void deleteFromPosition(int position) {
+        if (!head) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        Node* temp = head;
+        if (position == 0) {
+            head = temp->next;
+            if (head) {
+                head->prev = nullptr;
+            }
+            delete temp;
+            return;
+        }
+        for (int i = 0; temp && i < position; i++) {
+            temp = temp->next;
+        }
+        if (temp) {
+            if (temp->prev) {
+                temp->prev->next = temp->next;
+            }
+            if (temp->next) {
+                temp->next->prev = temp->prev;
+            }
+            delete temp;
+        } else {
+            cout << "Position out of bounds!" << endl;
+        }
+    }
+
+    // Function to insert an element after another element
+    void insertAfter(int target, int value) {
+        Node* temp = head;
+        while (temp && temp->data != target) {
+            temp = temp->next;
+        }
+        if (temp) {
+            Node* newNode = new Node(value);
+            newNode->next = temp->next;
+            if (temp->next) {
+                temp->next->prev = newNode;
+            }
+            temp->next = newNode;
+            newNode->prev = temp;
+        } else {
+            cout << "Element " << target << " not found!" << endl;
+        }
+    }
+
+    // Function to insert an element before another element
+    void insertBefore(int target, int value) {
+        Node* temp = head;
+        while (temp && temp->data != target) {
+            temp = temp->next;
+        }
+        if (temp) {
+            Node* newNode = new Node(value);
+            newNode->prev = temp->prev;
+            if (temp->prev) {
+                temp->prev->next = newNode;
+            } else {
+                head = newNode; // Inserting before the head
+            }
+            newNode->next = temp;
+            temp->prev = newNode;
+        } else {
+            cout << "Element " << target << " not found!" << endl;
+        }
+    }
+
+    // Function to print the list
+    void printList() {
+        Node* temp = head;
+        if (!temp) {
+            cout << "List is empty!" << endl;
+            return;
+        }
+        while (temp) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    // Destructor to free memory
+    ~DoublyLinkedList() {
+        while (head) {
+            deleteFromRear();
+        }
+    }
+};
+
+// Main function to drive the menu
+int main() {
+    DoublyLinkedList list;
+    int choice, value, position, target;
+
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Insert at rear\n";
+        cout << "2. Delete from rear\n";
+        cout << "3. Insert at position\n";
+        cout << "4. Delete from position\n";
+        cout << "5. Insert after an element\n";
+        cout << "6. Insert before an element\n";
+        cout << "7. Print the list\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter value to insert: ";
+                cin >> value;
+                list.insertAtRear(value);
+                break;
+            case 2:
+                list.deleteFromRear();
+                break;
+            case 3:
+                cout << "Enter value and position: ";
+                cin >> value >> position;
+                list.insertAtPosition(value, position);
+                break;
+            case 4:
+                cout << "Enter position to delete: ";
+                cin >> position;
+                list.deleteFromPosition(position);
+                break;
+            case 5:
+                cout << "Enter target element and value to insert: ";
+                cin >> target >> value;
+                list.insertAfter(target, value);
+                break;
+            case 6:
+                cout << "Enter target element and value to insert: ";
+                cin >> target >> value;
+                list.insertBefore(target, value);
+                break;
+            case 7:
+                list.printList();
+                break;
+            case 0:
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                cout << "Invalid choice! Please try again." << endl;
+        }
+    } while (choice != 0);
+
+    return 0;
+}
